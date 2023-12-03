@@ -5,42 +5,44 @@ import json
 
 
 class PasswordManager:
-    @staticmethod
-    def generate_alphanumeric(length):
-        alphanumeric_chars = string.ascii_letters + string.digits
-        return ''.join(random.choice(alphanumeric_chars) for _ in range(length))
 
     def __init__(self):
         self.characters = {}
+        self.alphanumeric_chars = string.ascii_letters + string.digits
+        self.length = 32
+        self.encrypted_pass = ''
+        self.dic_export = {}
+
+    def generate_alphanumeric(self):
+        return ''.join(random.choice(self.alphanumeric_chars) for _ in range(self.length))
 
     def key_match_az(self):
         lower_list = list(string.ascii_lowercase)
         for i in lower_list:
-            self.characters[i] = PasswordManager.generate_alphanumeric(32)
+            self.characters[i] = self.generate_alphanumeric()
 
     def key_match_azu(self):
         upper_list = list(string.ascii_uppercase)
         for i in upper_list:
-            self.characters[i] = PasswordManager.generate_alphanumeric(32)
+            self.characters[i] = self.generate_alphanumeric()
 
     def key_match_sc(self):
         sc_list = list(string.punctuation)
         for i in sc_list:
-            self.characters[i] = PasswordManager.generate_alphanumeric(32)
+            self.characters[i] = self.generate_alphanumeric()
 
     def key_match_digits(self):
         digit_list = list(string.digits)
         for i in digit_list:
-            self.characters[i] = PasswordManager.generate_alphanumeric(32)
+            self.characters[i] = self.generate_alphanumeric()
 
-    @staticmethod
-    def decrypt_pass():
+    def decrypt_pass(self):
         with open('encrypted_password.txt', 'r') as file:
-            encrypted_pass = file.read()
-        encrypted_list = [encrypted_pass[i:i + 32] for i in range(0, len(encrypted_pass), 32)]
+            self.encrypted_pass = file.read()
+        encrypted_list = [self.encrypted_pass[i:i + 32] for i in range(0, len(self.encrypted_pass), 32)]
         with open('char_export.txt', 'r') as file:
-            dic = json.load(file)
-        reverse_dict = {v: k for k, v in dic.items()}
+            self.dic_export = json.load(file)
+        reverse_dict = {v: k for k, v in self.dic_export.items()}
         decrypted_list = [reverse_dict[i] for i in encrypted_list]
         return ''.join((map(str, decrypted_list)))
 
